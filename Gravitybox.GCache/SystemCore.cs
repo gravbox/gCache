@@ -38,6 +38,15 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Add or update a object into cache
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMode"></param>
+        /// <param name="expiresAt"></param>
+        /// <param name="expiresIn"></param>
         public void AddOrUpdate(string container, string key, byte[] value, CacheExpirationMode expireMode, DateTime? expiresAt, TimeSpan? expiresIn)
         {
             if (string.IsNullOrEmpty(key))
@@ -62,6 +71,12 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Gets an object from cache and returns null if none exists
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public byte[] Get(string container, string key)
         {
             if (string.IsNullOrEmpty(key))
@@ -90,6 +105,13 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Delete an object from cache and returns true if successful
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <param name="isPartial"></param>
+        /// <returns></returns>
         public bool Delete(string container, string key, bool isPartial = false)
         {
             if (string.IsNullOrEmpty(key))
@@ -122,6 +144,10 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Clears all objects from the cache
+        /// </summary>
+        /// <param name="container"></param>
         public void Clear(string container)
         {
             try
@@ -151,6 +177,12 @@ namespace Gravitybox.GCache
 
         private object _locker = new object();
 
+        /// <summary>
+        /// Increment a counter variable by 1
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public long Incr(string container, string key)
         {
             lock (_locker)
@@ -165,6 +197,12 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Decrement a counter variable by 1
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public long Decr(string container, string key)
         {
             lock (_locker)
@@ -179,6 +217,12 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Get the current counter value
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public long GetCounter(string container, string key)
         {
             lock (_locker)
@@ -191,6 +235,11 @@ namespace Gravitybox.GCache
             }
         }
 
+        /// <summary>
+        /// Reset the counter value to zero
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
         public void ResetCounter(string container, string key)
         {
             lock (_locker)

@@ -5,8 +5,18 @@ using System.Threading.Tasks;
 
 namespace Gravitybox.GCache.Common
 {
+    /// <summary>
+    /// The client object used to create a strongly-typed cache interface with the server
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class CacheService<T> : IDisposable
     {
+        /// <summary>
+        /// Creates a strongly-typed cache interface
+        /// </summary>
+        /// <param name="server">The cache service network name or IP address</param>
+        /// <param name="port">The cache service network port</param>
+        /// <param name="container">The optional container name used to group cache values groups</param>
         public CacheService(string server = "localhost", int port = 7373, string container = null)
         {
             if (container != null && container.Trim() == string.Empty)
@@ -18,20 +28,47 @@ namespace Gravitybox.GCache.Common
             this.CreateConnection();
         }
 
+        /// <summary>
+        /// The service machine's name or IP address
+        /// </summary>
         public string Server { get; private set; }
+        /// <summary>
+        /// The optional container name used to group values into a container group
+        /// </summary>
         public string Container { get; private set; }
+        /// <summary>
+        /// The service machine's port
+        /// </summary>
+        /// <remarks>The default port is 7373</remarks>
         public int Port { get; private set; }
 
+        /// <summary>
+        /// Adds the value if it does not exist or updates the value if it does exist
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void AddOrUpdate(string key, T value)
         {
             AddInternal(key, value, CacheExpirationMode.None, null, null);
         }
 
+        /// <summary>
+        /// Adds the value if it does not exist or updates the value if it does exist
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
         public void AddOrUpdate(string key, T value, DateTime expiresAt)
         {
             AddInternal(key, value, CacheExpirationMode.Absolute, expiresAt, null);
         }
 
+        /// <summary>
+        /// Adds the value if it does not exist or updates the value if it does exist
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresIn"></param>
         public void AddOrUpdate(string key, T value, TimeSpan expiresIn)
         {
             AddInternal(key, value, CacheExpirationMode.Sliding, null, expiresIn);
@@ -49,16 +86,33 @@ namespace Gravitybox.GCache.Common
                 });
         }
 
+        /// <summary>
+        /// Uses the fetch function to add the resulting value if the key does not exist or updates the value if the key does exist
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fetchFunction"></param>
         public void AddOrUpdate(string key, Func<T> fetchFunction)
         {
             AddInternal(key, fetchFunction, CacheExpirationMode.None, null, null);
         }
 
+        /// <summary>
+        /// Uses the fetch function to add the resulting value if the key does not exist or updates the value if the key does exist
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fetchFunction"></param>
+        /// <param name="expiresAt"></param>
         public void AddOrUpdate(string key, Func<T> fetchFunction, DateTime expiresAt)
         {
             AddInternal(key, fetchFunction, CacheExpirationMode.Absolute, expiresAt, null);
         }
 
+        /// <summary>
+        /// Uses the fetch function to add the resulting value if the key does not exist or updates the value if the key does exist
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fetchFunction"></param>
+        /// <param name="expiresIn"></param>
         public void AddOrUpdate(string key, Func<T> fetchFunction, TimeSpan expiresIn)
         {
             AddInternal(key, fetchFunction, CacheExpirationMode.Sliding, null, expiresIn);
@@ -98,6 +152,11 @@ namespace Gravitybox.GCache.Common
                 .ContinueWith(t => operationComplete());
         }
 
+        /// <summary>
+        /// Get a value from cache. If no value is found, null is returned.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public T Get(string key)
         {
             T retval = default(T);
@@ -111,16 +170,36 @@ namespace Gravitybox.GCache.Common
             return retval;
         }
 
+        /// <summary>
+        /// Get a value from cache if one exists. If no value is found, the fetch function is executed to generate a new value to add to cache and return
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fetchFunction"></param>
+        /// <returns></returns>
         public T GetOrAdd(string key, Func<T> fetchFunction)
         {
             return GetOrAddInternal(key, fetchFunction, CacheExpirationMode.None, null, null);
         }
 
+        /// <summary>
+        /// Get a value from cache if one exists. If no value is found, the fetch function is executed to generate a new value to add to cache and return
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fetchFunction"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
         public T GetOrAdd(string key, Func<T> fetchFunction, DateTime expiresAt)
         {
             return GetOrAddInternal(key, fetchFunction, CacheExpirationMode.Absolute, expiresAt, null);
         }
 
+        /// <summary>
+        /// Get a value from cache if one exists. If no value is found, the fetch function is executed to generate a new value to add to cache and return
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fetchFunction"></param>
+        /// <param name="expiresIn"></param>
+        /// <returns></returns>
         public T GetOrAdd(string key, Func<T> fetchFunction, TimeSpan expiresIn)
         {
             return GetOrAddInternal(key, fetchFunction, CacheExpirationMode.Sliding, null, expiresIn);
@@ -139,16 +218,36 @@ namespace Gravitybox.GCache.Common
             return value;
         }
 
+        /// <summary>
+        /// Get a value from cache if one exists. If no value is found, the specified value is added to cache and returned
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public T GetOrAdd(string key, T value)
         {
             return GetOrAddInternal(key, value, CacheExpirationMode.None, null, null);
         }
 
+        /// <summary>
+        /// Get a value from cache if one exists. If no value is found, the specified value is added to cache and returned
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
         public T GetOrAdd(string key, T value, DateTime expiresAt)
         {
             return GetOrAddInternal(key, value, CacheExpirationMode.Absolute, expiresAt, null);
         }
 
+        /// <summary>
+        /// Get a value from cache if one exists. If no value is found, the specified value is added to cache and returned
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresIn"></param>
+        /// <returns></returns>
         public T GetOrAdd(string key, T value, TimeSpan expiresIn)
         {
             return GetOrAddInternal(key, value, CacheExpirationMode.Sliding, null, expiresIn);
@@ -166,11 +265,20 @@ namespace Gravitybox.GCache.Common
             return value;
         }
 
+        /// <summary>
+        /// Delete an item from cache based on the specified key. If using partial matching then all items that start with the specified key are matched.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="isPartial"></param>
+        /// <returns></returns>
         public bool Delete(string key, bool isPartial = false)
         {
             return this.DataModelService.Delete(this.Container, key, isPartial);
         }
 
+        /// <summary>
+        /// Removes all items from the cache
+        /// </summary>
         public void Clear()
         {
             RetryHelper.DefaultRetryPolicy(5)
@@ -180,6 +288,11 @@ namespace Gravitybox.GCache.Common
                 });
         }
 
+        /// <summary>
+        /// Increment a counter variable by 1
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public long Incr(string key)
         {
             long retval = 0;
@@ -198,6 +311,11 @@ namespace Gravitybox.GCache.Common
                 .ContinueWith(t => operationComplete());
         }
 
+        /// <summary>
+        /// Decrement a counter variable by 1
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public long Decr(string key)
         {
             long retval = 0;
@@ -216,6 +334,11 @@ namespace Gravitybox.GCache.Common
                 .ContinueWith(t => operationComplete());
         }
 
+        /// <summary>
+        /// Get the current value of the specfied counter variable
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public long GetCounter(string key)
         {
             long retval = 0;
@@ -244,6 +367,9 @@ namespace Gravitybox.GCache.Common
         private void IncrementDoneCounter() { Interlocked.Increment(ref _doneCounter); }
         private void DecrementDoneCounter() { Interlocked.Decrement(ref _doneCounter); }
 
+        /// <summary>
+        /// Determines if all asyncronous processes are complete
+        /// </summary>
         public bool IsAsyncComplete
         {
             get { return Interlocked.Read(ref _doneCounter) == 0; }

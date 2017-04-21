@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace Gravitybox.GCache.Common
 {
-    /// <summary />
+    /// <summary>
+    /// The WCF binding that compresses the traffic between client and server
+    /// </summary>
     public class CompressedNetTcpBinding : NetTcpBinding
     {
         /// <summary />
