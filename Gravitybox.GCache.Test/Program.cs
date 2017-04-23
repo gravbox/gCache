@@ -96,7 +96,7 @@ namespace Gravitybox.GCache.Tests
             for (var ii = 0; ii < 500; ii++)
                 theItem.B.Add("Blah " + ii);
 
-            using (var cache = new CacheService<TestItem>())
+            using (var cache = new CacheService<TestItem>("localhost", 7373))
             {
                 cache.UseCompression = true;
                 cache.EncryptionKey = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -174,11 +174,11 @@ namespace Gravitybox.GCache.Tests
             using (var cache = new CacheService<string>(container: container))
             {
                 var timer2 = Stopwatch.StartNew();
+                var value = RandomString(500);
                 for (var ii = 0; ii < batchCount * itemsPerBatch; ii++)
                 {
 
                     var key = "Key-" + ii;
-                    var value = RandomString(500);
                     cache.AddOrUpdateAsync(key, value);
                     if (ii % 1000 == 0)
                         Console.WriteLine("Added " + ii + ", Elapsed=" + timer2.ElapsedMilliseconds);
@@ -189,7 +189,7 @@ namespace Gravitybox.GCache.Tests
             timer.Stop();
             Console.WriteLine("Loaded: Count=" + (batchCount * itemsPerBatch) + ", Elapsed=" + timer.ElapsedMilliseconds);
 
-            var testCount = 10000;
+            var testCount = 20000;
             timer = Stopwatch.StartNew();
             var hitCount = 0;
             using (var cache = new CacheService<string>(container: container))

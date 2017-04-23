@@ -281,8 +281,8 @@ namespace Gravitybox.GCache
                 if (count > 0)
                     Logger.LogInfo("Cache Purge: Count=" + count + ", Elapsed=" + timer.ElapsedMilliseconds);
 
-                Logger.LogInfo("Stats: Count=" + _cache.Count + ", LastCount=" + _lastCount + ", Increase=" + (_cache.Count - _lastCount) + ", ThreadId=" + System.Threading.Thread.CurrentThread.ManagedThreadId);
-                _lastCount = _cache.Count;
+                //Logger.LogInfo("Stats: Count=" + _cache.Count + ", LastCount=" + _lastCount + ", Increase=" + (_cache.Count - _lastCount) + ", ThreadId=" + System.Threading.Thread.CurrentThread.ManagedThreadId);
+                //_lastCount = _cache.Count;
             }
             catch (Exception ex)
             {
