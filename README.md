@@ -5,9 +5,10 @@ This is a memory based caching system written in C#. It is windows service that 
 
 The syntax is simple. Create a cache object pointing to the host machine and port, then add or retrieve objects.
 
-using (var cache = new CacheService<TestItem>("localhost", 7373))
-{
-	var theItem = new TestItem();
-	cache.AddOrUpdate("zz", theItem);
-	var newItem = cache.Get("zz");
-}
+
+	using (var cache = new CacheService<TestItem>("localhost", 7373))
+	{
+		var theItem = new TestItem();
+		cache.AddOrUpdate("zz", theItem);
+		var newItem = cache.Get("zz");
+	}
