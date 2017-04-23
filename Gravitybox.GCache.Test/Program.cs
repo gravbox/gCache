@@ -19,10 +19,11 @@ namespace Gravitybox.GCache.Tests
 
             //Test1();
             //Test2();
+            //Test3();
             //TestParallel();
             //TestCounter1();
             //TestCounter2();
-            //TestLarge();
+            TestLarge();
 
             Console.WriteLine("Press <ENTER> to end...");
             Console.ReadLine();
@@ -86,6 +87,23 @@ namespace Gravitybox.GCache.Tests
             using (var cache = new CacheService<string>(container: "Z2"))
             {
                 var q = cache.Get(key);
+            }
+        }
+
+        private static void Test3()
+        {
+            var theItem = new TestItem();
+            for (var ii = 0; ii < 500; ii++)
+                theItem.B.Add("Blah " + ii);
+
+            using (var cache = new CacheService<TestItem>())
+            {
+                cache.UseCompression = true;
+                cache.EncryptionKey = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 };
+                var key = "zz";
+                cache.AddOrUpdate(key, theItem);
+                var v = cache.Get(key);
+                Console.WriteLine("Test3: Complete");
             }
         }
 

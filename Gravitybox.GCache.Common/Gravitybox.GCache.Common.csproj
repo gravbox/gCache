@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheService.cs" />
-    <Compile Include="CompressedNetTcpBinding.cs" />
+    <Compile Include="EncryptionDomain.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ISystemCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

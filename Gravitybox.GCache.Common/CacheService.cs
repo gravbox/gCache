@@ -29,13 +29,39 @@ namespace Gravitybox.GCache.Common
         }
 
         /// <summary>
+        /// The key used to encrypt data before it is sent over the wire and stored.
+        /// </summary>
+        /// <remarks>In cache, the data is encrypted.</remarks>
+        public byte[] EncryptionKey
+        {
+            get { return _encryptionKey; }
+            set
+            {
+                if (value == null)
+                    _encryptionKey = value;
+                else if (value.Length == 16)
+                    _encryptionKey = value;
+                else
+                    throw new Exception("Encryption key must be exactly 16 bytes.");
+            }
+        }
+        private byte[] _encryptionKey = null;
+
+        /// <summary>
+        /// Determines if compression is used to store the values
+        /// </summary>
+        public bool UseCompression { get; set; } = false;
+
+        /// <summary>
         /// The service machine's name or IP address
         /// </summary>
         public string Server { get; private set; }
+
         /// <summary>
         /// The optional container name used to group values into a container group
         /// </summary>
         public string Container { get; private set; }
+
         /// <summary>
         /// The service machine's port
         /// </summary>
@@ -82,7 +108,14 @@ namespace Gravitybox.GCache.Common
                     if (value == null)
                         this.DataModelService.AddOrUpdate(this.Container, key, null, expireMode, expiresAt, expiresIn);
                     else
-                        this.DataModelService.AddOrUpdate(this.Container, key, value.ObjectToBin(), expireMode, expiresAt, expiresIn);
+                    {
+                        var data = value.ObjectToBin();
+                        if (this.UseCompression)
+                            data = data.Compress();
+                        if (this.EncryptionKey != null)
+                            data = EncryptionDomain.Encrypt(data, this.EncryptionKey);
+                        this.DataModelService.AddOrUpdate(this.Container, key, data, expireMode, expiresAt, expiresIn);
+                    }
                 });
         }
 
@@ -127,7 +160,14 @@ namespace Gravitybox.GCache.Common
                     if (value == null)
                         this.DataModelService.AddOrUpdate(this.Container, key, null, expireMode, expiresAt, expiresIn);
                     else
-                        this.DataModelService.AddOrUpdate(this.Container, key, value.ObjectToBin(), expireMode, expiresAt, expiresIn);
+                    {
+                        var data = value.ObjectToBin();
+                        if (this.UseCompression)
+                            data = data.Compress();
+                        if (this.EncryptionKey != null)
+                            data = EncryptionDomain.Encrypt(data, this.EncryptionKey);
+                        this.DataModelService.AddOrUpdate(this.Container, key, data, expireMode, expiresAt, expiresIn);
+                    }
                 });
         }
 
@@ -159,14 +199,24 @@ namespace Gravitybox.GCache.Common
         /// <returns></returns>
         public T Get(string key)
         {
-            T retval = default(T);
+            byte[] results = null;
             RetryHelper.DefaultRetryPolicy(5)
                 .Execute(() =>
                 {
-                    var v = this.DataModelService.Get(this.Container, key);
-                    if (v == null) retval = default(T);
-                    else retval = v.BinToObject<T>();
+                    results = this.DataModelService.Get(this.Container, key);
                 });
+
+            T retval = default(T);
+            if (results == null) retval = default(T);
+            else
+            {
+                if (this.EncryptionKey != null)
+                    results = EncryptionDomain.Decrypt(results, this.EncryptionKey);
+                if (this.UseCompression)
+                    results = results.Decompress();
+                retval = results.BinToObject<T>();
+            }
+
             return retval;
         }
 
@@ -410,7 +460,7 @@ namespace Gravitybox.GCache.Common
         }
 
         /// <summary />
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             var startTime = DateTime.Now;
             while (!this.IsAsyncComplete && DateTime.Now.Subtract(startTime).TotalSeconds < 30)

@@ -99,7 +99,8 @@ namespace Gravitybox.GCache
                 var primaryHost = new ServiceHost(service, primaryAddress);
 
                 //Initialize the service
-                var netTcpBinding = new CompressedNetTcpBinding();
+                //var netTcpBinding = new CompressedNetTcpBinding();
+                var netTcpBinding = new NetTcpBinding();
                 netTcpBinding.Security.Mode = SecurityMode.None;
                 primaryHost.AddServiceEndpoint(typeof(ISystemCore), netTcpBinding, string.Empty);
                 primaryHost.Open();

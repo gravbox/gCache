@@ -17,7 +17,8 @@ namespace Gravitybox.GCache.Common
         /// <summary />
         public static ChannelFactory<ISystemCore> GetFactory(string serverName, int port)
         {
-            var myBinding = new CompressedNetTcpBinding() { MaxBufferSize = 10 * 1024 * 1024, MaxReceivedMessageSize = 10 * 1024 * 1024, MaxBufferPoolSize = 10 * 1024 * 1024 };
+            //var myBinding = new CompressedNetTcpBinding() { MaxBufferSize = 10 * 1024 * 1024, MaxReceivedMessageSize = 10 * 1024 * 1024, MaxBufferPoolSize = 10 * 1024 * 1024 };
+            var myBinding = new NetTcpBinding() { MaxBufferSize = 10 * 1024 * 1024, MaxReceivedMessageSize = 10 * 1024 * 1024, MaxBufferPoolSize = 10 * 1024 * 1024 }; 
             myBinding.ReaderQuotas.MaxStringContentLength = 10 * 1024 * 1024;
             myBinding.ReaderQuotas.MaxBytesPerRead = 10 * 1024 * 1024;
             myBinding.ReaderQuotas.MaxArrayLength = 10 * 1024 * 1024;
