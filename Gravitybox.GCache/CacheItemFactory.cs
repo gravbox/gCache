@@ -67,7 +67,7 @@ namespace Gravitybox.GCache
                     _cache.Add(new CacheItem());
                 //Logger.LogDebug("CacheItemFactory Repopulate: StartCount=" + origCount + ", Added=" + count + ", ThreadId=" + System.Threading.Thread.CurrentThread.ManagedThreadId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Logger.LogError(ex);
             }
