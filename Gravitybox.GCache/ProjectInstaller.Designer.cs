@@ -33,8 +33,8 @@
             // 
             // serviceInstaller
             // 
-            this.serviceInstaller.Description = "Acme Caching Services";
-            this.serviceInstaller.ServiceName = "Acme Caching Services";
+            this.serviceInstaller.Description = "gCache Service";
+            this.serviceInstaller.ServiceName = "gCache Service";
             // 
             // serviceProcessInstaller
             // 

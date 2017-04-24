@@ -31,7 +31,7 @@
             // 
             // PersistentService
             // 
-            this.ServiceName = "Acme Caching Services";
+            this.ServiceName = "gCache Service";
 
 		}
 

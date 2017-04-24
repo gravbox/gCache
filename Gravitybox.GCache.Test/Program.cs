@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gravitybox.GCache.Common;
+using System.Configuration;
 
 namespace Gravitybox.GCache.Tests
 {
@@ -12,26 +13,39 @@ namespace Gravitybox.GCache.Tests
     {
         private const string SERVER = "localhost";
         private static Random _rnd = new Random();
+        private static string _server = "";
 
         static void Main(string[] args)
         {
-            System.Threading.Thread.Sleep(2000);
+            try
+            {
+                _server = ConfigurationManager.AppSettings["server"];
+                if (string.IsNullOrEmpty(_server))
+                    _server = "localhost";
 
-            //Test1();
-            //Test2();
-            //Test3();
-            //TestParallel();
-            //TestCounter1();
-            //TestCounter2();
-            TestLarge();
+                Console.WriteLine("Server=" + _server);
 
+                System.Threading.Thread.Sleep(2000);
+
+                Test1();
+                //Test2();
+                //Test3();
+                //TestParallel();
+                //TestCounter1();
+                //TestCounter2();
+                //TestLarge();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
             Console.WriteLine("Press <ENTER> to end...");
             Console.ReadLine();
         }
 
         private static void Test1()
         {
-            using (var cache = new CacheService<TestItem>())
+            using (var cache = new CacheService<TestItem>(server: _server))
             {
                 var timer = Stopwatch.StartNew();
 
@@ -39,7 +53,7 @@ namespace Gravitybox.GCache.Tests
                 for (var ii = 0; ii < 500; ii++)
                     theItem.B.Add("Blah " + ii);
 
-                for (var ii = 0; ii < 10000; ii++)
+                for (var ii = 0; ii < 1000; ii++)
                 {
                     var key = (ii % 100).ToString();
                     cache.AddOrUpdate(key, theItem);
@@ -96,7 +110,7 @@ namespace Gravitybox.GCache.Tests
             for (var ii = 0; ii < 500; ii++)
                 theItem.B.Add("Blah " + ii);
 
-            using (var cache = new CacheService<TestItem>("localhost", 7373))
+            using (var cache = new CacheService<TestItem>())
             {
                 cache.UseCompression = true;
                 cache.EncryptionKey = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 };
