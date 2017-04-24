@@ -45,21 +45,19 @@ namespace Gravitybox.GCache.Tests
 
         private static void Test1()
         {
+            var theItem = new TestItem();
+            for (var ii = 0; ii < 500; ii++)
+                theItem.B.Add("Blah " + ii);
+
             using (var cache = new CacheService<TestItem>(server: _server))
             {
                 var timer = Stopwatch.StartNew();
-
-                var theItem = new TestItem();
-                for (var ii = 0; ii < 500; ii++)
-                    theItem.B.Add("Blah " + ii);
-
                 for (var ii = 0; ii < 1000; ii++)
                 {
                     var key = (ii % 100).ToString();
                     cache.AddOrUpdate(key, theItem);
                     var v = cache.Get(key);
                 };
-
                 timer.Stop();
                 Console.WriteLine("Elapsed= " + timer.ElapsedMilliseconds);
             }
@@ -185,7 +183,7 @@ namespace Gravitybox.GCache.Tests
             var itemsPerBatch = 1000;
             var timer = Stopwatch.StartNew();
 
-            using (var cache = new CacheService<string>(container: container))
+            using (var cache = new CacheService<string>(server: _server, container: container))
             {
                 var timer2 = Stopwatch.StartNew();
                 var value = RandomString(500);
@@ -206,7 +204,7 @@ namespace Gravitybox.GCache.Tests
             var testCount = 20000;
             timer = Stopwatch.StartNew();
             var hitCount = 0;
-            using (var cache = new CacheService<string>(container: container))
+            using (var cache = new CacheService<string>(server: _server, container: container))
             {
                 for (var ii = 0; ii < testCount; ii++)
                 {

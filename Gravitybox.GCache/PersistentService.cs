@@ -93,8 +93,15 @@ namespace Gravitybox.GCache
                     port = DEFAULTPORT;
                 if (port < 500) port = DEFAULTPORT;
 
+                //Get the max size
+                var maxSizeValue = ConfigurationManager.AppSettings["MaxSize"];
+                int maxSize = 0;
+                if (!int.TryParse(maxSizeValue, out maxSize))
+                    maxSize = 0;
+                if (maxSize < 0) maxSize = 0;
+
                 //Setup the end point
-                var service = new SystemCore();
+                var service = new SystemCore() { MaxSize = maxSize };
                 var primaryAddress = new Uri("net.tcp://localhost:"+ port + "/__cacheCore");
                 var primaryHost = new ServiceHost(service, primaryAddress);
 

@@ -27,6 +27,7 @@ namespace Gravitybox.GCache
                 const int TimeInterval = 120000;
 #endif
                 var q = CacheItemFactory.Get();
+                
                 //Cull cache every minute
                 _timer = new System.Timers.Timer(TimeInterval);
                 _timer.Elapsed += _timer_Elapsed;
@@ -37,6 +38,8 @@ namespace Gravitybox.GCache
                 Logger.LogError(ex);
             }
         }
+
+        public int MaxSize { get; set; } = 0;
 
         /// <summary>
         /// Add or update a object into cache
@@ -51,6 +54,9 @@ namespace Gravitybox.GCache
         {
             if (string.IsNullOrEmpty(key))
                 throw new Exception("Key not set!");
+            if (value != null && this.MaxSize > 0 && value.Length > this.MaxSize)
+                throw new Exception("Max size exceeded!");
+
             try
             {
                 key = MakeKey(container, key);
@@ -281,8 +287,8 @@ namespace Gravitybox.GCache
                 if (count > 0)
                     Logger.LogInfo("Cache Purge: Count=" + count + ", Elapsed=" + timer.ElapsedMilliseconds);
 
-                //Logger.LogInfo("Stats: Count=" + _cache.Count + ", LastCount=" + _lastCount + ", Increase=" + (_cache.Count - _lastCount) + ", ThreadId=" + System.Threading.Thread.CurrentThread.ManagedThreadId);
-                //_lastCount = _cache.Count;
+                Logger.LogDebug("Stats: Count=" + _cache.Count + ", LastCount=" + _lastCount + ", Increase=" + (_cache.Count - _lastCount) + ", ThreadId=" + System.Threading.Thread.CurrentThread.ManagedThreadId);
+                _lastCount = _cache.Count;
             }
             catch (Exception ex)
             {
